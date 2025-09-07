@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 曲線によるdivのバウンダリー
 
-## Getting Started
+二つのdiv要素を曲線の分割線で分割する
 
-First, run the development server:
+- 曲線をCSVで定義して分割する
+- 曲線をSVGで定義して分割する
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![曲線分割](./docs/images/curve-boundary.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 曲線をCSVで定義して分割する方法
 
-## Learn More
+### 実装例：`src/app/components/CssDivider.tsx`
 
-To learn more about Next.js, take a look at the following resources:
+このコンポーネントは、CSSの`clip-path`プロパティを使って、2つのdiv要素を曲線で分割しています。
+本来はCSVで定義した座標点をJavaScriptで読み込み、`clip-path`やSVGの`<polyline>`/`<path>`に変換して描画しますが、
+この例では、あらかじめ決めた曲線（多角形やベジェ曲線）を`clip-path`の値として直接指定しています。
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### ポイント
+- `css-div1`と`css-div2`の間に`css-separator`を配置し、`clip-path`で曲線状の分割線を表現
+- `-mt-10`や`-mt-[40px]`で上下のdivと曲線の位置をぴったり揃える
+- `clip-path`の外側は透過となり、下のdivの色が見える
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### 応用
+CSVで座標点を用意し、JavaScriptで読み込んで`clip-path`のpolygonやSVG pathに動的に変換することで、
+任意の曲線分割も実現できます。
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 曲線をSVGで定義して分割する方法
+
+### 実装例：`src/app/components/SvgDivider.tsx`
+
+このコンポーネントは、SVGの`<path>`要素を使って2つのdiv要素を曲線で分割しています。
+SVGのベジェ曲線（Cコマンド）を使うことで、自由な曲線を分割線として描画できます。
+
+#### ポイント
+- `svg-div1`と`svg-div2`の間に`svg-separator`（SVG）を配置し、`<path>`で曲線を描画
+- SVGの高さ分だけ`-mt-[40px]`などで上に重ね、divの下端と曲線の下端を揃える
+- 曲線より下側を`svg-div2`の背景色で塗りつぶすことで、2つの領域を分割
+
+#### 応用
+SVGの`<path>`のd属性を動的に生成することで、CSVや他のデータから任意の曲線を描画することも可能です。
+
+
